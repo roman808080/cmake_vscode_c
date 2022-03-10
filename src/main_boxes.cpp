@@ -26,7 +26,6 @@ int count_invalid_boxes(vector<vector<string>> box_template_list) {
             if (search != elements.end())
             {
                 ++elements[character];
-                // cout << "character = " << character << " amount = " << elements[character] << endl;
             }
             else {
                 elements[character] = 1;
@@ -45,9 +44,16 @@ int count_invalid_boxes(vector<vector<string>> box_template_list) {
             }
             else {
                 ++invalid;
+
+                elements.clear();
                 break;
             }
         }
+
+        if (elements.empty() != true) {
+            ++invalid;
+        }
+
     }
     return invalid;
 }
