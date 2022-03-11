@@ -6,6 +6,8 @@ string ltrim(const string &);
 string rtrim(const string &);
 vector<string> split(const string &);
 
+int count_invalid_boxes(vector<vector<string>> box_template_list);
+int count_invalid_boxes_fast(vector<vector<string>> box_template_list);
 
 /*
  * Complete the 'count_invalid_boxes' function below.
@@ -14,35 +16,42 @@ vector<string> split(const string &);
  * The function accepts 2D_STRING_ARRAY box_template_list as parameter.
  */
 
-int count_invalid_boxes(vector<vector<string>> box_template_list) {
+int count_invalid_boxes(vector<vector<string>> box_template_list)
+{
     int invalid = 0;
-    
-    for (const auto box: box_template_list) {
+
+    for (const auto box : box_template_list)
+    {
         map<char, int> elements = {};
         auto expected_box = box[0];
-        
-        for(auto character: expected_box) {
+
+        for (auto character : expected_box)
+        {
             auto search = elements.find(character);
             if (search != elements.end())
             {
                 ++elements[character];
             }
-            else {
+            else
+            {
                 elements[character] = 1;
             }
         }
-        
+
         auto reality_box = box[1];
-        for (auto character: reality_box) {
+        for (auto character : reality_box)
+        {
             auto search = elements.find(character);
             if (search != elements.end())
             {
                 --elements[character];
-                if (elements[character] <= 0) {
+                if (elements[character] <= 0)
+                {
                     elements.erase(character);
                 }
             }
-            else {
+            else
+            {
                 ++invalid;
 
                 elements.clear();
@@ -50,13 +59,76 @@ int count_invalid_boxes(vector<vector<string>> box_template_list) {
             }
         }
 
-        if (elements.empty() != true) {
+        if (elements.empty() != true)
+        {
             ++invalid;
         }
-
     }
     return invalid;
 }
+
+int count_invalid_boxes_fast(vector<vector<string>> box_template_list)
+{
+    int invalid = 0;
+
+    for (const auto box_pair : box_template_list)
+    {
+        // c, m, p
+        int boxes_array[] = {0, 0, 0};
+
+        for (const auto character : box_pair[0])
+        {
+            if (character == 'c')
+            {
+                ++boxes_array[0];
+            }
+            else if (character == 'm')
+            {
+                ++boxes_array[1];
+            }
+            else if (character == 'p')
+            {
+                ++boxes_array[2];
+            }
+            else
+            {
+                throw std::runtime_error("wrong type");
+            }
+        }
+
+        for (const auto character : box_pair[1])
+        {
+            if (character == 'c')
+            {
+                --boxes_array[0];
+            }
+            else if (character == 'm')
+            {
+                --boxes_array[1];
+            }
+            else if (character == 'p')
+            {
+                --boxes_array[2];
+            }
+            else
+            {
+                throw std::runtime_error("wrong type");
+            }
+        }
+
+        for(int i = 0; i < 3; ++i)
+        {
+            if (boxes_array[i] != 0)
+            {
+                ++invalid;
+                break;
+            }
+        }
+    }
+
+    return invalid;
+}
+
 int main()
 {
     ofstream fout(getenv("OUTPUT_PATH"));
@@ -73,7 +145,8 @@ int main()
 
     vector<vector<string>> box_template_list(box_template_list_rows);
 
-    for (int i = 0; i < box_template_list_rows; i++) {
+    for (int i = 0; i < box_template_list_rows; i++)
+    {
         box_template_list[i].resize(box_template_list_columns);
 
         string box_template_list_row_temp_temp;
@@ -81,14 +154,15 @@ int main()
 
         vector<string> box_template_list_row_temp = split(rtrim(box_template_list_row_temp_temp));
 
-        for (int j = 0; j < box_template_list_columns; j++) {
+        for (int j = 0; j < box_template_list_columns; j++)
+        {
             string box_template_list_row_item = box_template_list_row_temp[j];
 
             box_template_list[i][j] = box_template_list_row_item;
         }
     }
 
-    int result = count_invalid_boxes(box_template_list);
+    int result = count_invalid_boxes_fast(box_template_list);
 
     fout << result << "\n";
 
@@ -97,35 +171,37 @@ int main()
     return 0;
 }
 
-string ltrim(const string &str) {
+string ltrim(const string &str)
+{
     string s(str);
 
     s.erase(
         s.begin(),
-        find_if(s.begin(), s.end(), not1(ptr_fun<int, int>(isspace)))
-    );
+        find_if(s.begin(), s.end(), not1(ptr_fun<int, int>(isspace))));
 
     return s;
 }
 
-string rtrim(const string &str) {
+string rtrim(const string &str)
+{
     string s(str);
 
     s.erase(
         find_if(s.rbegin(), s.rend(), not1(ptr_fun<int, int>(isspace))).base(),
-        s.end()
-    );
+        s.end());
 
     return s;
 }
 
-vector<string> split(const string &str) {
+vector<string> split(const string &str)
+{
     vector<string> tokens;
 
     string::size_type start = 0;
     string::size_type end = 0;
 
-    while ((end = str.find(" ", start)) != string::npos) {
+    while ((end = str.find(" ", start)) != string::npos)
+    {
         tokens.push_back(str.substr(start, end - start));
 
         start = end + 1;
