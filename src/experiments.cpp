@@ -39,15 +39,40 @@ public:
 
 std::function<int()> the_function_which_creates(const int number)
 {
-    return [=](){
+    return [=]()
+    {
         return number;
     };
 }
 
-std::function<std::shared_ptr<BaseClass>()> another_function_which_returns_base_class(std::shared_ptr<BaseClass> class_object){
-    return [=]() {
+std::function<std::shared_ptr<BaseClass>()> another_function_which_returns_base_class(std::shared_ptr<BaseClass> class_object)
+{
+    return [=]()
+    {
         return class_object;
     };
+}
+
+void merge_vectors()
+{
+    std::vector<int> first = {10, 7, 5, 3, 1};
+    std::vector<int> second = {9, 8, 6, 4, 2};
+
+    std::vector<int> third;
+    third.resize(10);
+
+    std::merge(std::begin(first), std::end(first),
+               std::begin(second), std::end(second),
+               std::begin(third),
+               [](int a, int b){
+                   return b < a;
+               });
+
+    for (const auto& element: third)
+    {
+        std::cout << element << " ";
+    }
+    std::cout << std::endl;
 }
 
 int main()
@@ -85,5 +110,7 @@ int main()
     }
 
     std::cout << base_class_pointer->b() << std::endl;
+
+    merge_vectors();
     return 0;
 }
