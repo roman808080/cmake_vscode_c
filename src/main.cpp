@@ -261,17 +261,15 @@ int vectorFunction()
 // https://stackoverflow.com/questions/44191626/undefined-vs-unspecified-vs-implementation-defined-behavior
 // https://team-coder.com/solid-principles/
 
-class BaseInterface
-{
-};
+#include <variant>
 
 template <typename T>
-class Base: public BaseInterface
+class Base
 {
 public:
     void fun()
     {
-        T &derived = static_cast<T &>(*this);
+        T& derived = static_cast<T&>(*this);
         derived.hello();
     }
 
@@ -294,22 +292,25 @@ class AnotherDerived : public Base<AnotherDerived>
 public:
     void hello()
     {
-        std::cout << "hello" << std::endl;
+        std::cout << "goodbye" << std::endl;
     }
 };
 
 
 int main()
 {
-    std::vector<BaseInterface> objects;
+    using ImplVariant = std::variant<Derived, AnotherDerived>;
+    std::vector<ImplVariant> objects;
+
     objects.push_back(Derived());
     objects.push_back(AnotherDerived());
 
-    for (const auto& element: objects)
+    for (auto& element: objects)
     {
-        // element.fun();
+        std::visit([](auto&& object){ object.fun(); }, element);
     }
     return 0;
 }
 
 // https://wandbox.org/permlink/YOwEetfIRfaafmY6
+// https://stackoverflow.com/questions/56660709/static-interface-crtp-mixin-other
