@@ -262,6 +262,8 @@ int vectorFunction()
 // https://team-coder.com/solid-principles/
 
 #include <variant>
+#include <optional>
+#include <functional>
 
 template <typename T>
 class Base
@@ -296,6 +298,11 @@ public:
     }
 };
 
+struct Chunk
+{
+	char* startPosition;
+	size_t size;
+};
 
 int main()
 {
@@ -309,6 +316,35 @@ int main()
     {
         std::visit([](auto&& object){ object.fun(); }, element);
     }
+
+    std::vector<function<void()>> functionObjects;
+
+    std::string myString("Hell");
+    const size_t amountOfBlocks = 10;
+    std::vector<char> cache(myString.size() * amountOfBlocks);
+
+    std::list<char*> startingPositions;
+    std::list<Chunk> chunks;
+
+    for (int startPosition = 0; startPosition < myString.size() * amountOfBlocks; startPosition += myString.size()) {
+
+        Chunk chunk {&cache[startPosition], myString.size()};
+        chunks.push_back(chunk);
+
+        startingPositions.push_back(&cache[startPosition]);
+
+        std::copy(myString.begin(), myString.end(), cache.begin() + startPosition);
+    }
+
+    for (const auto pointer: startingPositions) {
+        std::cout << pointer << std::endl;
+    }
+
+    for (const auto chunk: chunks) {
+        std::string_view view(chunk.startPosition, chunk.size);
+        std::cout << view << " " << std::to_string(chunk.size) << std::endl;
+    }
+
     return 0;
 }
 
